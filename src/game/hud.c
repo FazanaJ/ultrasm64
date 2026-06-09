@@ -401,6 +401,93 @@ void render_hud_camera_status(void) {
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 }
 
+#include "profiler.h"
+#define    OS_CLOCK_RATE        62500000LL
+#define    OS_CPU_COUNTER        (OS_CLOCK_RATE*3/4)
+#define OS_CYCLES_TO_USEC(c)    (((u32)(c)*(1000000LL/15625LL))/(OS_CPU_COUNTER/15625LL))
+#define FRAMETIME_COUNT 30
+#define PROFILER_COUNT 60
+
+u8 gFPS = 30;
+OSTime frameTimes[FRAMETIME_COUNT];
+u8 curFrameTimeIndex = 0;
+extern s16 gCurrentFrameIndex1;
+extern struct ProfilerFrameData gProfilerFrameData[2];
+u8 gShowProfilerNew = TRUE;
+u32 totalCPUReads[PROFILER_COUNT + 2];
+u32 totalRSPReads[PROFILER_COUNT + 2];
+u32 totalRDPReads[PROFILER_COUNT + 2];
+u8 perfIteration = 0;
+
+// Call once per frame
+void calculate_and_update_fps(void) {
+    OSTime newTime = osGetTime();
+    OSTime oldTime = frameTimes[curFrameTimeIndex];
+    frameTimes[curFrameTimeIndex] = newTime;
+
+    curFrameTimeIndex++;
+    if (curFrameTimeIndex >= FRAMETIME_COUNT) {
+        curFrameTimeIndex = 0;
+    }
+    gFPS = (FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+}
+
+void render_profiler(void) {
+    struct ProfilerFrameData *profiler;
+    u32 clockStart;
+    u32 levelScriptDuration;
+    u32 renderDuration;
+    u32 soundDuration;
+    u32 taskStart;
+    s32 i;
+    u32 cpuTime;
+    taskStart = 0;
+    profiler = &gProfilerFrameData[gCurrentFrameIndex1 ^ 1];
+    clockStart = profiler->gameTimes[0] <= profiler->soundTimes[0] ? profiler->gameTimes[0] : profiler->soundTimes[0];
+    levelScriptDuration = profiler->gameTimes[1] - clockStart;
+    renderDuration = profiler->gameTimes[2] - profiler->gameTimes[1];
+    profiler->numSoundTimes &= 0xFFFE;
+    for (i = 0; i < profiler->numSoundTimes; i += 2) {
+        // calculate sound duration of max - min
+        soundDuration = profiler->soundTimes[i + 1] - profiler->soundTimes[i];
+        taskStart += soundDuration;
+        // was the sound time minimum less than level script execution?
+        if (profiler->soundTimes[i] < profiler->gameTimes[1]) {
+            // overlay the levelScriptDuration onto the profiler by subtracting the soundDuration.
+            levelScriptDuration -= soundDuration;
+        } else if (profiler->soundTimes[i] < profiler->gameTimes[2]) {
+            // overlay the renderDuration onto the profiler by subtracting the soundDuration.
+            renderDuration -= soundDuration;
+        }
+    }
+    profiler->numSoundTimes &= 0xFFFE;
+
+    
+    totalCPUReads[PROFILER_COUNT] -= totalCPUReads[perfIteration];
+    cpuTime = MIN(OS_CYCLES_TO_USEC(taskStart + levelScriptDuration + renderDuration), 66666);
+    totalCPUReads[perfIteration] = cpuTime;
+    totalCPUReads[PROFILER_COUNT] += cpuTime;
+    totalCPUReads[PROFILER_COUNT + 1] = totalCPUReads[PROFILER_COUNT] / PROFILER_COUNT;
+    totalRSPReads[PROFILER_COUNT] -= totalRSPReads[perfIteration];
+    totalRSPReads[perfIteration] = OS_CYCLES_TO_USEC(profiler->gfxTimes[1] - profiler->gfxTimes[0]);
+    totalRSPReads[PROFILER_COUNT] += OS_CYCLES_TO_USEC(profiler->gfxTimes[1] - profiler->gfxTimes[0]);
+    totalRDPReads[PROFILER_COUNT] -= totalRDPReads[perfIteration];
+    totalRDPReads[perfIteration] = OS_CYCLES_TO_USEC(profiler->gfxTimes[2] - profiler->gfxTimes[0]);
+    totalRDPReads[PROFILER_COUNT] += OS_CYCLES_TO_USEC(profiler->gfxTimes[2] - profiler->gfxTimes[0]);
+    totalRSPReads[PROFILER_COUNT + 1] = totalRSPReads[PROFILER_COUNT] / PROFILER_COUNT;
+    totalRDPReads[PROFILER_COUNT + 1] = totalRDPReads[PROFILER_COUNT] / PROFILER_COUNT;
+    calculate_and_update_fps();
+    print_text_fmt_int(32, 240 - 32, "FPS %d", gFPS);
+    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[PROFILER_COUNT + 1]);
+
+    perfIteration++;
+    if (perfIteration == PROFILER_COUNT) {
+        perfIteration = 0;
+    }
+}
+
 /**
  * Render HUD strings using hudDisplayFlags with it's render functions,
  * excluding the cannon reticle which detects a camera preset for it.
@@ -458,5 +545,8 @@ void render_hud(void) {
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
             render_hud_timer();
         }
+    }
+    if (gShowProfilerNew) {
+        render_profiler();
     }
 }

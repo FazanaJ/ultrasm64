@@ -285,6 +285,7 @@ static unsigned char starIcon[] = { GLYPH_STAR, GLYPH_SPACE };
 static unsigned char xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 #endif
 
+#define BUTTON_SCALE 4.0f
 /**
  * Yellow Background Menu Initial Action
  * Rotates the background at 180 grades and it's scale.
@@ -292,7 +293,7 @@ static unsigned char xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
  */
 void beh_yellow_background_menu_init(void) {
     gCurrentObject->oFaceAngleYaw = 0x8000;
-    gCurrentObject->oMenuButtonScale = 9.0f;
+    gCurrentObject->oMenuButtonScale = BUTTON_SCALE;
 }
 
 /**
@@ -300,7 +301,7 @@ void beh_yellow_background_menu_init(void) {
  * Properly scales the background in the main menu.
  */
 void beh_yellow_background_menu_loop(void) {
-    cur_obj_scale(9.0f);
+    cur_obj_scale(BUTTON_SCALE);
 }
 
 /**
@@ -2841,8 +2842,8 @@ static void print_file_select_strings(void) {
  */
 Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        print_file_select_strings();
-        print_menu_cursor();
+        //print_file_select_strings();
+        //print_menu_cursor();
     }
     return NULL;
 }

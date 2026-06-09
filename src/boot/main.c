@@ -57,7 +57,7 @@ struct SPTask *sCurrentAudioSPTask = NULL;
 struct SPTask *sCurrentDisplaySPTask = NULL;
 struct SPTask *sNextAudioSPTask = NULL;
 struct SPTask *sNextDisplaySPTask = NULL;
-s8 sAudioEnabled = TRUE;
+s8 sAudioEnabled = FALSE;
 u32 gNumVblanks = 0;
 s8 gResetTimer = 0;
 s8 gNmiResetBarsTimer = 0;
@@ -444,20 +444,7 @@ void change_vi(OSViMode *mode, int width, int height){
 void thread1_idle(UNUSED void *arg) {
 
     osCreateViManager(OS_PRIORITY_VIMGR);
-	switch ( osTvType ) {
-	case OS_TV_NTSC:
-		// NTSC
-        VI = osViModeNtscLan1;
-		break;
-	case OS_TV_MPAL:
-		// MPAL
-        VI = osViModeMpalLan1;
-		break;
-	case OS_TV_PAL:
-		// PAL
-        VI = osViModePalLan1;
-		break;
-	}
+    VI = osViModeNtscLan1;
     change_vi(&VI, SCREEN_WIDTH, SCREEN_HEIGHT);
     osViSetMode(&VI);
     osViBlack(TRUE);

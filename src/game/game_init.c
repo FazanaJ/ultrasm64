@@ -745,11 +745,6 @@ void thread5_game_loop(UNUSED void *arg) {
     render_init();
 
     while (TRUE) {
-        // If the reset timer is active, run the process to reset the game.
-        if (gResetTimer != 0) {
-            draw_reset_bars();
-            continue;
-        }
         profiler_log_thread5_time(THREAD5_START);
 
         // If any controllers are plugged in, start read the data for when
@@ -761,7 +756,7 @@ void thread5_game_loop(UNUSED void *arg) {
             osContStartReadData(&gSIEventMesgQueue);
         }
 
-        audio_game_loop_tick();
+        //audio_game_loop_tick();
         select_gfx_pool();
         read_controller_inputs();
         addr = level_script_execute(addr);
