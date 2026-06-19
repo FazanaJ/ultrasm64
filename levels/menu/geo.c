@@ -152,7 +152,7 @@ const GeoLayout geo_menu_file_select_strings_and_menu_cursor[] = {
       GEO_CLOSE_NODE(),
       GEO_ZBUFFER(1),
       GEO_OPEN_NODE(),
-         GEO_CAMERA_FRUSTUM(45, 100, 25000),
+         GEO_CAMERA_FRUSTUM(85, 100, 25000),
          GEO_OPEN_NODE(),
             GEO_CAMERA(0, 0, 0, 1000, 0, 0, 0, 0x00000000),
             GEO_OPEN_NODE(),

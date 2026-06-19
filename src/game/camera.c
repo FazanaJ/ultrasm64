@@ -11335,7 +11335,7 @@ void approach_fov_20(UNUSED struct MarioState *m) {
 }
 
 void set_fov_45(UNUSED struct MarioState *m) {
-    sFOVState.fov = 45.f;
+    sFOVState.fov = 85.f;
 }
 
 void set_fov_29(UNUSED struct MarioState *m) {
@@ -11421,42 +11421,7 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
     u8 fovFunc = sFOVState.fovFunc;
 
     if (callContext == GEO_CONTEXT_RENDER) {
-        switch (fovFunc) {
-            case CAM_FOV_SET_45:
-                set_fov_45(marioState);
-                break;
-            case CAM_FOV_SET_29:
-                set_fov_29(marioState);
-                break;
-            case CAM_FOV_ZOOM_30:
-                zoom_fov_30(marioState);
-                break;
-            case CAM_FOV_DEFAULT:
-                fov_default(marioState);
-                break;
-            case CAM_FOV_BBH:
-                set_fov_bbh(marioState);
-                break;
-            case CAM_FOV_APP_45:
-                approach_fov_45(marioState);
-                break;
-            case CAM_FOV_SET_30:
-                set_fov_30(marioState);
-                break;
-            case CAM_FOV_APP_20:
-                approach_fov_20(marioState);
-                break;
-            case CAM_FOV_APP_80:
-                approach_fov_80(marioState);
-                break;
-            case CAM_FOV_APP_30:
-                approach_fov_30(marioState);
-                break;
-            case CAM_FOV_APP_60:
-                approach_fov_60(marioState);
-                break;
-            //! No default case
-        }
+        set_fov_45(marioState);
     }
 
     perspective->fov = sFOVState.fov;

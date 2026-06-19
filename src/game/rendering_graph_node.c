@@ -84,8 +84,8 @@ struct RenderModeContainer renderModeTable_1Cycle[2] = { { {
     } },
     { {
     /* z-buffered */
-    G_RM_ZB_OPA_SURF,
-    G_RM_ZB_OPA_SURF,
+    G_RM_AA_ZB_OPA_SURF,
+    G_RM_AA_ZB_OPA_SURF,
     G_RM_AA_ZB_OPA_DECAL,
     G_RM_AA_ZB_OPA_INTER,
     G_RM_AA_ZB_TEX_EDGE,
@@ -107,8 +107,8 @@ struct RenderModeContainer renderModeTable_2Cycle[2] = { { {
     } },
     { {
     /* z-buffered */
-    G_RM_ZB_OPA_SURF2,
-    G_RM_ZB_OPA_SURF2,
+    G_RM_AA_ZB_OPA_SURF2,
+    G_RM_AA_ZB_OPA_SURF2,
     G_RM_AA_ZB_OPA_DECAL2,
     G_RM_AA_ZB_OPA_INTER2,
     G_RM_AA_ZB_TEX_EDGE2,

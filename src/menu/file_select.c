@@ -285,14 +285,14 @@ static unsigned char starIcon[] = { GLYPH_STAR, GLYPH_SPACE };
 static unsigned char xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 #endif
 
-#define BUTTON_SCALE 4.0f
+#define BUTTON_SCALE 1.0f
 /**
  * Yellow Background Menu Initial Action
  * Rotates the background at 180 grades and it's scale.
  * Although the scale is properly applied in the loop function.
  */
 void beh_yellow_background_menu_init(void) {
-    gCurrentObject->oFaceAngleYaw = 0x8000;
+    //gCurrentObject->oFaceAngleYaw = 0x8000;
     gCurrentObject->oMenuButtonScale = BUTTON_SCALE;
 }
 
